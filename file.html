@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Dibobol! 😈</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #0a0a0a;
+      font-family: 'Courier New', monospace;
+      overflow: hidden;
+      position: relative;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      opacity: 0.5;
+    }
+
+    .lock-screen {
+      background: rgba(0, 0, 0, 0.85);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      color: #00ff00;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+      border: 1px solid #00ff00;
+    }
+
+    .lock-icon {
+      font-size: 60px;
+      margin-bottom: 20px;
+      animation: glitch 1s infinite;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      animation: typing 2s steps(30, end), blink-caret 0.75s step-end infinite;
+      overflow: hidden;
+      white-space: nowrap;
+      border-right: 2px solid #00ff00;
+    }
+
+    p {
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    input[type="password"] {
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #00ff00;
+      border-radius: 5px;
+      width: 80%;
+      margin-bottom: 15px;
+      background: #000;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      font-size: 14px;
+      background-color: #00ff00;
+      border: none;
+      border-radius: 5px;
+      color: #000;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      transition: background-color 0.3s;
+    }
+
+    .btn:hover {
+      background-color: #00cc00;
+    }
+
+    .exit-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: transparent;
+      border: none;
+      color: #00ff00;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+    }
+
+    .error {
+      color: #ff3333;
+      font-size: 12px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    @keyframes glitch {
+      0% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(2px, -2px); }
+      60% { transform: translate(-2px, -2px); }
+      80% { transform: translate(2px, 2px); }
+      100% { transform: translate(0); }
+    }
+
+    @keyframes typing {
+      from { width: 0; }
+      to { width: 100%; }
+    }
+
+    @keyframes blink-caret {
+      from, to { border-color: transparent; }
+      50% { border-color: #00ff00; }
+    }
+
+    @media (max-width: 600px) {
+      .lock-screen {
+        width: 95%;
+      }
+      h1 {
+        font-size: 18px;
+      }
+      p {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+  <div class="lock-screen">
+    <div class="lock-icon">💾</div>
+    <h1>Sistem Anda Dibobol!</h1>
+    <p>Perangkat ini telah diretas. Masukkan kode akses untuk membuka kunci atau data Anda akan dihapus!</p>
+    <input type="password" id="password" placeholder="Kode akses...">
+    <button class="btn" onclick="tryUnlock()">Buka Kunci</button>
+    <p class="error" id="error">Kode salah! Sistem akan self-destruct dalam 10 detik!</p>
+  </div>
+  <button class="exit-btn" onclick="exitPrank()">Keluar Prank</button>
+
+  <script>
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+    const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ@#$%^&*';
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = [];
+
+    for (let x = 0; x < columns; x++) drops[x] = 1;
+
+    function draw() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#00ff00';
+      ctx.font = fontSize + 'px Courier New';
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = chars.charAt(Math.floor(Math.random() * chars.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
+    }
+
+    setInterval(draw, 33);
+
+    function tryUnlock() {
+      const password = document.getElementById('password').value;
+      const error = document.getElementById('error');
+
+      if (password) {
+        error.style.display = 'block';
+        error.textContent = 'Kode salah! Sistem akan self-destruct dalam 10 detik!';
+        document.getElementById('password').value = '';
+        document.querySelector('.lock-screen').style.animation = 'glitch 0.5s';
+        setTimeout(() => {
+          document.querySelector('.lock-screen').style.animation = '';
+        }, 500);
+      }
+    }
+
+    function exitPrank() {
+      document.body.innerHTML = '<div style="text-align: center; padding: 50px; color: #00ff00; background: #000; font-family: Courier New;"><h1>Hacked? Haha, Kena Prank! 😎</h1><p>Tenang, ini cuma bercanda. Perangkat kamu aman!</p></div>';
+    }
+
+    window.history.pushState(null, null, window.location.href);
+    window.onpopstate = function () {
+      window.history.pushState(null, null, window.location.href);
+    };
+  </script>
+</body>
+</html>
